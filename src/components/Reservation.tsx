@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import backgroundImage from '../assets/fondo4.webp';
 
 const servicesList = [
   'Corte de cabello',
@@ -14,6 +15,7 @@ const Reservation: React.FC = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [reservationDetails, setReservationDetails] = useState<{date: string, timeSlot: string, services: string[]}>({date: '', timeSlot: '', services: []});
 
   useEffect(() => {
     if (date) {
@@ -34,7 +36,14 @@ const Reservation: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setReservationDetails({date, timeSlot: selectedTimeSlot, services: selectedServices});
     setShowAlert(true);
+
+    // Limpiar el formulario
+    setDate('');
+    setSelectedTimeSlot('');
+    setSelectedServices([]);
+
     setTimeout(() => {
       setShowAlert(false);
     }, 5000); // Oculta la alerta después de 5 segundos
@@ -49,8 +58,16 @@ const Reservation: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 flex justify-center items-center min-h-screen">
-      <div className="card w-full max-w-lg shadow-xl bg-base-100">
+    <div 
+      className="min-h-screen flex justify-center items-center"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
         <div className="card-body">
           <h2 className="card-title text-3xl font-bold mb-4">Reservar Turno</h2>
           {showAlert && (
@@ -58,7 +75,7 @@ const Reservation: React.FC = () => {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              <span>Turno reservado para el {date} de {selectedTimeSlot}. Servicios: {selectedServices.join(', ')}</span>
+              <span>Turno reservado para el {reservationDetails.date} de {reservationDetails.timeSlot}. Servicios: {reservationDetails.services.join(', ')}</span>
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
