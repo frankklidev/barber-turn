@@ -71,7 +71,7 @@ const Reservation: React.FC = () => {
     <div className={isImageLoaded ? 'background-loaded' : 'min-h-screen flex justify-center items-center'}>
       <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
         <div className="card-body">
-          <h2 className="card-title text-3xl font-bold mb-4">Reservar Turno</h2>
+          <h2 className="card-title text-3xl font-bold mb-4">Reservar Turnos</h2>
           {showAlert && (
             <div role="alert" className="alert alert-info">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6">
