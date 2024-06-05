@@ -3,10 +3,13 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente ProtectedRoute
 import './App.css';
 
 const Home = lazy(() => import('./components/Home'));
 const Reservation = lazy(() => import('./components/Reservation'));
+const Login = lazy(() => import('./components/Login'));
+const Register = lazy(() => import('./components/Register'));
 
 const App: React.FC = () => {
   return (
@@ -32,10 +35,12 @@ const AnimatedRoutes: React.FC = () => {
         classNames="fade"
         timeout={300}
       >
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
           <Routes location={location}>
             <Route path="/" element={<Home />} />
-            <Route path="/reservar" element={<Reservation />} />
+            <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} /> {/* Ruta protegida */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Suspense>
       </CSSTransition>

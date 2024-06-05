@@ -1,37 +1,92 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import { FaSignInAlt, FaUserPlus, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 
 const Header: React.FC = () => {
   const [theme, setTheme] = useState('light');
+  const [session, setSession] = useState<any>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error getting session:', error);
+      } else {
+        setSession(data.session);
+      }
+    };
+
+    getSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [theme]);
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await supabase.auth.signOut();
+    setIsLoggingOut(false);
+    window.location.href = '/';
+  };
+
+  const getInitial = (email: string) => {
+    return email.charAt(0).toUpperCase();
+  };
+
   return (
     <header className="bg-primary text-white p-4 flex justify-between items-center">
-      <Link to="/" className="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 12l2-2m0 0l7-7 7 7m-2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7m12-2l2 2m-2-2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7m0 0L5 9" />
-        </svg>
-        <span>Inicio</span>
-      </Link>
-      <label className="flex cursor-pointer gap-2 ml-auto">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="5" />
-          <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
-        </svg>
-        <input type="checkbox" className="toggle theme-controller" onChange={toggleTheme} checked={theme === 'dark'} />
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </label>
+      {session ? (
+        <div className="avatar placeholder">
+          <div className="bg-neutral-focus text-neutral-content rounded-full w-12 h-12 flex items-center justify-center ring ring-primary ring-offset-base-100 ring-offset-2">
+            <span className="text-2xl font-bold">{getInitial(session.user.email)}</span>
+          </div>
+        </div>
+      ) : (
+        <Link to="/" className="text-2xl font-bold">Mi Barbería</Link>
+      )}
+      <div className="flex items-center gap-4">
+        {session ? (
+          <button onClick={handleLogout} className="flex items-center gap-2 text-white" disabled={isLoggingOut}>
+            <FaSignOutAlt className="w-5 h-5" />
+            <span>Cerrar Sesión</span>
+            {isLoggingOut && (
+              <div className="loader border-t-4 border-white rounded-full w-5 h-5 animate-spin"></div>
+            )}
+          </button>
+        ) : (
+          <>
+            <Link to="/login" className="flex items-center gap-2 text-white">
+              <FaSignInAlt className="w-5 h-5" />
+              <span>Iniciar Sesión</span>
+            </Link>
+            <Link to="/register" className="flex items-center gap-2 text-white">
+              <FaUserPlus className="w-5 h-5" />
+              <span>Registrarse</span>
+            </Link>
+          </>
+        )}
+        <label className="flex cursor-pointer gap-2 ml-auto">
+          <FaSun className="w-5 h-5" />
+          <input type="checkbox" className="toggle theme-controller" onChange={toggleTheme} checked={theme === 'dark'} />
+          <FaMoon className="w-5 h-5" />
+        </label>
+      </div>
     </header>
   );
-}
+};
 
 export default Header;
