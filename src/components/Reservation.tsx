@@ -8,11 +8,11 @@ const Reservation: React.FC = () => {
   const [date, setDate] = useState('');
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<{ name: string, price: number }[]>([]);
   const [showAlert, setShowAlert] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [reservationDetails, setReservationDetails] = useState<{ date: string, timeSlot: string, services: string[] }>({ date: '', timeSlot: '', services: [] });
+  const [reservationDetails, setReservationDetails] = useState<{ date: string, timeSlot: string, services: { name: string, price: number }[] }>({ date: '', timeSlot: '', services: [] });
 
   useEffect(() => {
     const img = new Image();
@@ -65,12 +65,16 @@ const Reservation: React.FC = () => {
     }, 5000);
   };
 
-  const toggleService = (service: string) => {
+  const toggleService = (service: { name: string, price: number }) => {
     setSelectedServices((prevServices) =>
       prevServices.includes(service)
-        ? prevServices.filter(s => s !== service)
+        ? prevServices.filter(s => s.name !== service.name)
         : [...prevServices, service]
     );
+  };
+
+  const calculateTotal = () => {
+    return selectedServices.reduce((total, service) => total + service.price, 0);
   };
 
   const progressBarStyle = {
@@ -105,6 +109,7 @@ const Reservation: React.FC = () => {
               handleSubmit={handleSubmit}
               showAlert={showAlert}
               reservationDetails={reservationDetails}
+              calculateTotal={calculateTotal}
             />
           </Suspense>
         </>

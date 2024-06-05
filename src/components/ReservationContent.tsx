@@ -1,11 +1,11 @@
 import React from 'react';
 
 const servicesList = [
-  'Corte de cabello',
-  'Afeitado',
-  'Mascarilla facial',
-  'Tinte de cabello',
-  'Tratamiento capilar'
+  { name: 'Corte de cabello', price: 10 },
+  { name: 'Afeitado', price: 5 },
+  { name: 'Mascarilla facial', price: 8 },
+  { name: 'Tinte de cabello', price: 12 },
+  { name: 'Tratamiento capilar', price: 15 }
 ];
 
 interface ReservationContentProps {
@@ -14,11 +14,12 @@ interface ReservationContentProps {
   timeSlots: string[];
   selectedTimeSlot: string;
   setSelectedTimeSlot: React.Dispatch<React.SetStateAction<string>>;
-  selectedServices: string[];
-  toggleService: (service: string) => void;
+  selectedServices: { name: string, price: number }[];
+  toggleService: (service: { name: string, price: number }) => void;
   handleSubmit: (event: React.FormEvent) => void;
   showAlert: boolean;
-  reservationDetails: { date: string, timeSlot: string, services: string[] };
+  reservationDetails: { date: string, timeSlot: string, services: { name: string, price: number }[] };
+  calculateTotal: () => number;
 }
 
 const ReservationContent: React.FC<ReservationContentProps> = ({
@@ -31,7 +32,8 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
   toggleService,
   handleSubmit,
   showAlert,
-  reservationDetails
+  reservationDetails,
+  calculateTotal
 }) => {
   return (
     <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
@@ -42,7 +44,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <span>Turno reservado para el {reservationDetails.date} de {reservationDetails.timeSlot}. Servicios: {reservationDetails.services.join(', ')}</span>
+            <span>Turno reservado para el {reservationDetails.date} de {reservationDetails.timeSlot}. Servicios: {reservationDetails.services.map(service => service.name).join(', ')}</span>
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,26 +84,28 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
             </label>
             <div className="space-y-2">
               {servicesList.map((service) => (
-                <label key={service} className="flex items-center space-x-3">
+                <label key={service.name} className="flex items-center space-x-3">
                   <input
                     type="checkbox"
                     className="checkbox checkbox-primary"
-                    checked={selectedServices.includes(service)}
+                    checked={selectedServices.some(s => s.name === service.name)}
                     onChange={() => toggleService(service)}
                   />
-                  <span className="label-text">{service}</span>
+                  <span className="label-text">{service.name} - ${service.price}</span>
                 </label>
               ))}
             </div>
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Servicios seleccionados</span>
+              <span className="label-text">Total a pagar</span>
             </label>
-            <div className="space-x-2">
-              {selectedServices.map((service) => (
-                <span key={service} className="badge badge-primary">{service}</span>
-              ))}
+            <div className="stats shadow">
+              <div className="stat">
+                <div className="stat-title">Total</div>
+                <div className="stat-value">${calculateTotal()}</div>
+                <div className="stat-desc">Incluye todos los servicios seleccionados</div>
+              </div>
             </div>
           </div>
           <div className="form-control mt-6">
