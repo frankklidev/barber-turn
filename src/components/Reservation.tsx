@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import backgroundImage from '../assets/fondo4.webp';
+import '../App.css';
 
 const servicesList = [
   'Corte de cabello',
@@ -15,7 +16,16 @@ const Reservation: React.FC = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [reservationDetails, setReservationDetails] = useState<{date: string, timeSlot: string, services: string[]}>({date: '', timeSlot: '', services: []});
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = backgroundImage;
+    img.onload = () => {
+      setIsImageLoaded(true);
+    };
+  }, []);
 
   useEffect(() => {
     if (date) {
@@ -58,15 +68,7 @@ const Reservation: React.FC = () => {
   };
 
   return (
-    <div 
-      className="min-h-screen flex justify-center items-center"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
+    <div className={isImageLoaded ? 'background-loaded' : 'min-h-screen flex justify-center items-center'}>
       <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
         <div className="card-body">
           <h2 className="card-title text-3xl font-bold mb-4">Reservar Turno</h2>
