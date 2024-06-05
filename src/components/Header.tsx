@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { FaSignInAlt, FaUserPlus, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
+import { FaSignInAlt, FaUserPlus, FaSignOutAlt, FaSun, FaMoon, FaHome } from 'react-icons/fa';
 
 const Header: React.FC = () => {
   const [theme, setTheme] = useState('light');
@@ -49,16 +49,19 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-primary text-white p-4 flex justify-between items-center">
-      {session ? (
-        <div className="avatar placeholder">
-          <div className="bg-neutral-focus text-neutral-content rounded-full w-12 h-12 flex items-center justify-center ring ring-primary ring-offset-base-100 ring-offset-2">
-            <span className="text-2xl font-bold">{getInitial(session.user.email)}</span>
-          </div>
-        </div>
-      ) : (
-        <Link to="/" className="text-2xl font-bold">Mi Barbería</Link>
+      {session && (
+        <Link to="/" className="text-2xl font-bold">
+          <FaHome className="w-8 h-8" />
+        </Link>
       )}
       <div className="flex items-center gap-4">
+        {session && (
+          <div className="avatar placeholder">
+            <div className="bg-neutral-focus text-neutral-content rounded-full w-12 h-12 flex items-center justify-center ring ring-primary ring-offset-base-100 ring-offset-2">
+              <span className="text-2xl font-bold">{getInitial(session.user.email)}</span>
+            </div>
+          </div>
+        )}
         {session ? (
           <button onClick={handleLogout} className="flex items-center gap-2 text-white" disabled={isLoggingOut}>
             <FaSignOutAlt className="w-5 h-5" />

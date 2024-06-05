@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { TransitionGroup, Transition } from 'react-transition-group';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente ProtectedRoute
@@ -30,20 +31,27 @@ const AnimatedRoutes: React.FC = () => {
 
   return (
     <TransitionGroup>
-      <CSSTransition
+      <Transition
         key={location.key}
-        classNames="fade"
         timeout={300}
+        onEnter={(node:any) => node.classList.add('fade-enter')}
+        onEntering={(node:any) => node.classList.add('fade-enter-active')}
+        onExit={(node) => node.classList.add('fade-exit')}
+        onExiting={(node) => node.classList.add('fade-exit-active')}
       >
-        <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} /> {/* Ruta protegida */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Suspense>
-      </CSSTransition>
+        {(state) => (
+          <div className={`fade ${state}`}>
+            <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+              <Routes location={location}>
+                <Route path="/" element={<Home />} />
+                <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} /> {/* Ruta protegida */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Routes>
+            </Suspense>
+          </div>
+        )}
+      </Transition>
     </TransitionGroup>
   );
 };
