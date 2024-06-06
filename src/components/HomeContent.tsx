@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Hero from './Hero';
 import ExceptionalFeatures from './ExceptionalFeatures';
 import ImageTextComponent from './ImageTextComponent';
+import MapComponent from './MapComponent'; // Import the MapComponent
 
 interface HomeContentProps {
   navigate: ReturnType<typeof useNavigate>;
@@ -25,6 +26,9 @@ const HomeContent: React.FC<HomeContentProps> = ({ navigate, session }) => {
       <ExceptionalFeatures />
       <div className="flex flex-col w-full lg:flex-row mt-8 mx-2">
         <ImageTextComponent />
+      </div>
+      <div className="flex flex-col w-full lg:flex-row mt-8 mx-2">
+        <MapComponent /> {/* Add the MapComponent here */}
       </div>
     </div>
   );
