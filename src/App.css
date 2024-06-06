@@ -1,97 +1,85 @@
-.background-loaded {
-    background-image: url('./assets/fondo4.webp'); /* Asegúrate de que la ruta sea correcta */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
+/* Estilos para los componentes sin imágenes de fondo */
+.background-loaded, .background-loaded-home {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: #f8f9fa;
   
-  /* Estilos para las imágenes de fondo */
-  .background-loaded-home {
-    background-image: url('./assets/fondo.webp'); /* Asegúrate de que la ruta sea correcta */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
-  
-  .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1;
-    pointer-events: none; /* Asegúrate de que no bloquee la interacción del usuario */
-  }
-  
-  .card {
-    position: relative;
-    z-index: 2; /* Asegúrate de que el contenido esté por encima de la overlay */
-  }
-  
-  .hero-content {
-    position: relative;
-    z-index: 2; /* Asegúrate de que el contenido esté por encima de la overlay */
-  }
-  
-  /* Estilos para el efecto de escritura */
-  @keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
-  }
-  
-  @keyframes blink-caret {
-    from, to { border-color: transparent; }
-    50% { border-color: orange; }
-  }
-  
-  .typewriter h1, .typewriter p {
-    overflow: hidden;
-    border-right: .15em solid orange; /* The typewriter cursor */
-    white-space: nowrap;
-    margin: 0 auto;
-    letter-spacing: .15em;
-  }
-  
-  .typewriter h1 {
-    animation: typing 3.5s steps(40, end) forwards, blink-caret .75s step-end infinite;
-  }
-  
-  .typewriter p {
-    animation: typing 5s steps(50, end) 3.5s forwards, blink-caret .75s step-end infinite;
-  }
-  
-  .fade-enter {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  
-  .fade-enter-active {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 300ms, transform 300ms;
-  }
-  
-  .fade-exit {
-    opacity: 1;
-    transform: scale(1);
-  }
-  
-  .fade-exit-active {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 300ms, transform 300ms;
-  }
-  
+}
 
+.hero {
+  width: 100%;
+  height: 50vh; /* Ajusta esta altura según sea necesario */
+  background-size: cover;
+  background-position: center;
+  position: relative;
   
+}
+
+.hero-overlay {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.card, .hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Estilos para el efecto de escritura */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: orange; }
+}
+
+.typewriter h1, .typewriter p {
+  overflow: hidden;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .15em;
+}
+
+.typewriter h1 {
+  animation: typing 3.5s steps(40, end) forwards, blink-caret .75s step-end infinite;
+}
+
+.typewriter p {
+  animation: typing 5s steps(50, end) 3.5s forwards, blink-caret .75s step-end infinite;
+}
+
+.fade-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 300ms, transform 300ms;
+}
