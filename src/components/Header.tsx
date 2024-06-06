@@ -57,7 +57,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-primary text-white p-4 flex justify-between items-center">
+    <header className="bg-primary text-white p-4 flex justify-between items-center fixed w-full top-0 z-50">
       <Link to="/" className="text-2xl font-bold">
         <FaHome className="w-8 h-8" />
       </Link>
@@ -89,7 +89,7 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-2 ml-auto">
           <FaSun className="w-5 h-5" />
           <input type="checkbox" className="toggle theme-controller" onChange={toggleTheme} checked={theme === 'dark'} />
-          <FaMoon className="w-5 h-5 mr-3" />
+          <FaMoon className="w-5 h-5" />
         </div>
       </div>
     </header>
