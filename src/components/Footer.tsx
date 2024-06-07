@@ -1,11 +1,12 @@
 import React from 'react';
-import { FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { FaClock, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-primary text-white p-6 flex flex-col md:flex-row justify-between items-center mt-auto">
       <div>
-        <h2 className="text-lg font-bold">Mi Proyecto</h2>
+        <h2 className="text-lg font-bold flex items-center gap-2"><FaMapMarkerAlt /> Dirección</h2>
+        <p>Calle Falsa 123, Ciudad, País</p>
         <p>© 2024 Mi Proyecto. Todos los derechos reservados.</p>
       </div>
       <div className="mt-4 md:mt-0">

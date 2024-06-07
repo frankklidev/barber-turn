@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
-import image from '../assets/fondo4.webp'; // Asegúrate de que la ruta sea correcta
-import MapComponent from './MapComponent';
+import React from "react";
+import MapComponent from "./MapComponent";
 
 const ImageTextComponent: React.FC = () => {
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center p-4 w-full max-w-screen-lg mx-auto overflow-hidden">
-      <div className="flex-shrink-0 w-full md:w-3/4 lg:w-1/2 mb-4 lg:mb-0 lg:mr-10 flex justify-center">
-        <img src={image} alt="Barbería" className="w-3/4 md:w-2/3 lg:w-full h-auto rounded-lg shadow-md" />
-      </div>
-      <div className="flex-grow p-4 lg:p-8 text-center text-gray-800 dark:text-gray-100">
-        <h2 className="text-3xl font-bold mb-4 font-serif">Encuéntranos Aquí</h2>
-        <p className="text-lg mb-2 font-sans">Nuestra ubicación está marcada en el mapa a continuación:</p>
-        <div className="flex justify-center overflow-hidden">
-          <MapComponent />
+    <div className="flex flex-col items-center justify-center p-4 w-full max-w-screen-lg mx-auto overflow-hidden h-96">
+      <div className="card lg:card-side bg-base-100 shadow-xl h-full">
+        <figure className="w-full lg:w-1/2">
+          <div className="w-full h-64 lg:h-full">
+            <MapComponent />
+          </div>
+        </figure>
+        <div className="card-body w-full lg:w-1/2 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="card-title mb-4">Aquí nos encontramos</h2>
+            <p>Nuestra ubicación está marcada en el mapa a continuación:</p>
+          </div>
         </div>
       </div>
     </div>

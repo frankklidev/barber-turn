@@ -22,10 +22,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ navigate, session }) => {
   return (
     <div className="flex flex-col items-center w-full overflow-x-hidden">
       <Hero handleReserveNow={handleReserveNow} />
-      <div className="flex flex-col w-full lg:flex-row mt-8 mx-2 items-center">
+      <div className="flex flex-col w-full lg:flex-row mt-8 mx-2 items-center mb-8">
         <ExceptionalFeatures />
       </div>
-      <div className="flex flex-col w-full lg:flex-row mt-8 mx-2 items-center mr-14">
+      <div className="flex flex-col w-full lg:flex-row mt-8 mx-2 items-center mb-8">
         <ImageTextComponent />
       </div>
     </div>
