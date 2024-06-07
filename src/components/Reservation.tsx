@@ -118,7 +118,7 @@ const Reservation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-44 -mb-11">
+    <div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-24 -mb-11">
       <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>}>
         <ToastContainer />
         <ReservationContent
