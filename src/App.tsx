@@ -45,7 +45,7 @@ const AnimatedRoutes: React.FC = () => {
             <Suspense fallback={<Loading />}>
               <Routes location={location}>
                 <Route path="/" element={<Home />} />
-                <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} /> {/* Ruta protegida */}
+                <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
               </Routes>

@@ -3,6 +3,8 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import '../App.css';
 import { Service } from './ReservationContent';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ReservationContent = lazy(() => import('./ReservationContent'));
 
@@ -12,9 +14,8 @@ const Reservation: React.FC = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [servicesList, setServicesList] = useState<Service[]>([]);
-  const [showAlert, setShowAlert] = useState(false);
-  const [isLoadingServices, setIsLoadingServices] = useState(true);  // Nuevo estado para controlar la carga de servicios
-  const [reservationDetails, setReservationDetails] = useState<{ date: string, timeSlot: string, services: Service[] }>({ date: '', timeSlot: '', services: [] });
+  const [isLoadingServices, setIsLoadingServices] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -34,7 +35,7 @@ const Reservation: React.FC = () => {
       console.error(error);
     } else {
       setServicesList(data);
-      setIsLoadingServices(false);  // Marcar que los servicios han sido cargados
+      setIsLoadingServices(false);
     }
   };
 
@@ -46,18 +47,62 @@ const Reservation: React.FC = () => {
     return slots;
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setReservationDetails({ date, timeSlot: selectedTimeSlot, services: selectedServices });
-    setShowAlert(true);
+    setIsSubmitting(true);
 
-    setDate('');
-    setSelectedTimeSlot('');
-    setSelectedServices([]);
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
 
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 5000);
+    if (!user) {
+      console.error('Usuario no autenticado');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { error } = await supabase
+      .from('reservations')
+      .insert([
+        {
+          date: date,
+          time_slot: selectedTimeSlot,
+          services: selectedServices.map(service => service.id),
+          user_id: user.id,
+        },
+      ]);
+
+    if (error) {
+      console.error('Error al reservar turno:', error);
+      toast.error('Error al reservar el turno', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        theme: 'colored'
+      });
+    } else {
+      toast.success('Turno reservado con éxito', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        theme: 'colored'
+      });
+
+      setDate('');
+      setSelectedTimeSlot('');
+      setSelectedServices([]);
+    }
+
+    setIsSubmitting(false);
   };
 
   const toggleService = (service: Service) => {
@@ -73,8 +118,9 @@ const Reservation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-44 -mb-11">
       <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>}>
+        <ToastContainer />
         <ReservationContent
           date={date}
           setDate={setDate}
@@ -86,9 +132,8 @@ const Reservation: React.FC = () => {
           isLoadingServices={isLoadingServices}
           toggleService={toggleService}
           handleSubmit={handleSubmit}
-          showAlert={showAlert}
-          reservationDetails={reservationDetails}
           calculateTotal={calculateTotal}
+          isSubmitting={isSubmitting}
         />
       </Suspense>
     </div>
