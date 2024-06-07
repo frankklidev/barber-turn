@@ -47,7 +47,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+<div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-14 -mb-11">
       <div className="card w-full max-w-sm shadow-xl bg-base-100">
         <div className="card-body">
           <h2 className="card-title">Registrarse</h2>
