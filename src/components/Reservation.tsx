@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import backgroundImage from '../assets/fondo4.webp';
+import { supabase } from '../supabaseClient';
 import '../App.css';
+import { Service } from './ReservationContent';
 
 const ReservationContent = lazy(() => import('./ReservationContent'));
 
@@ -8,31 +10,14 @@ const Reservation: React.FC = () => {
   const [date, setDate] = useState('');
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
-  const [selectedServices, setSelectedServices] = useState<{ name: string, price: number }[]>([]);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+  const [servicesList, setServicesList] = useState<Service[]>([]);
   const [showAlert, setShowAlert] = useState(false);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [reservationDetails, setReservationDetails] = useState<{ date: string, timeSlot: string, services: { name: string, price: number }[] }>({ date: '', timeSlot: '', services: [] });
+  const [isLoadingServices, setIsLoadingServices] = useState(true);  // Nuevo estado para controlar la carga de servicios
+  const [reservationDetails, setReservationDetails] = useState<{ date: string, timeSlot: string, services: Service[] }>({ date: '', timeSlot: '', services: [] });
 
   useEffect(() => {
-    const img = new Image();
-    img.src = backgroundImage;
-    img.onload = () => {
-      setIsImageLoaded(true);
-    };
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev < 100) {
-          return prev + 10;
-        } else {
-          clearInterval(interval);
-          return prev;
-        }
-      });
-    }, 300);
-
-    return () => clearInterval(interval);
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -42,6 +27,16 @@ const Reservation: React.FC = () => {
       setSelectedTimeSlot('');
     }
   }, [date]);
+
+  const fetchServices = async () => {
+    const { data, error } = await supabase.from('services').select('*');
+    if (error) {
+      console.error(error);
+    } else {
+      setServicesList(data);
+      setIsLoadingServices(false);  // Marcar que los servicios han sido cargados
+    }
+  };
 
   const generateTimeSlots = () => {
     const slots = [];
@@ -65,10 +60,10 @@ const Reservation: React.FC = () => {
     }, 5000);
   };
 
-  const toggleService = (service: { name: string, price: number }) => {
+  const toggleService = (service: Service) => {
     setSelectedServices((prevServices) =>
       prevServices.includes(service)
-        ? prevServices.filter(s => s.name !== service.name)
+        ? prevServices.filter(s => s.id !== service.id)
         : [...prevServices, service]
     );
   };
@@ -77,43 +72,25 @@ const Reservation: React.FC = () => {
     return selectedServices.reduce((total, service) => total + service.price, 0);
   };
 
-  const progressBarStyle = {
-    "--value": progress.toString(),
-    "--size": "12rem",
-    "--thickness": "2px"
-  } as React.CSSProperties;
-
   return (
-    <div className={isImageLoaded ? 'background-loaded' : 'min-h-screen flex justify-center items-center'}>
-      {!isImageLoaded && (
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="radial-progress" style={progressBarStyle} role="progressbar">{progress}%</div>
-        </div>
-      )}
-      {isImageLoaded && (
-        <>
-          <div className="hero-overlay"></div>
-          <Suspense fallback={
-            <div className="flex justify-center items-center min-h-screen">
-              <div className="radial-progress" style={progressBarStyle} role="progressbar">{progress}%</div>
-            </div>
-          }>
-            <ReservationContent
-              date={date}
-              setDate={setDate}
-              timeSlots={timeSlots}
-              selectedTimeSlot={selectedTimeSlot}
-              setSelectedTimeSlot={setSelectedTimeSlot}
-              selectedServices={selectedServices}
-              toggleService={toggleService}
-              handleSubmit={handleSubmit}
-              showAlert={showAlert}
-              reservationDetails={reservationDetails}
-              calculateTotal={calculateTotal}
-            />
-          </Suspense>
-        </>
-      )}
+    <div className="min-h-screen flex justify-center items-center">
+      <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>}>
+        <ReservationContent
+          date={date}
+          setDate={setDate}
+          timeSlots={timeSlots}
+          selectedTimeSlot={selectedTimeSlot}
+          setSelectedTimeSlot={setSelectedTimeSlot}
+          selectedServices={selectedServices}
+          servicesList={servicesList}
+          isLoadingServices={isLoadingServices}
+          toggleService={toggleService}
+          handleSubmit={handleSubmit}
+          showAlert={showAlert}
+          reservationDetails={reservationDetails}
+          calculateTotal={calculateTotal}
+        />
+      </Suspense>
     </div>
   );
 };

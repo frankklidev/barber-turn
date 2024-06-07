@@ -1,12 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
-const servicesList = [
-  { name: 'Corte de cabello', price: 10 },
-  { name: 'Afeitado', price: 5 },
-  { name: 'Mascarilla facial', price: 8 },
-  { name: 'Tinte de cabello', price: 12 },
-  { name: 'Tratamiento capilar', price: 15 }
-];
+export interface Service {
+  id: number;
+  name: string;
+  price: number;
+}
 
 interface ReservationContentProps {
   date: string;
@@ -14,12 +13,14 @@ interface ReservationContentProps {
   timeSlots: string[];
   selectedTimeSlot: string;
   setSelectedTimeSlot: React.Dispatch<React.SetStateAction<string>>;
-  selectedServices: { name: string, price: number }[];
-  toggleService: (service: { name: string, price: number }) => void;
+  selectedServices: Service[];
+  servicesList: Service[];
+  toggleService: (service: Service) => void;
   handleSubmit: (event: React.FormEvent) => void;
   showAlert: boolean;
-  reservationDetails: { date: string, timeSlot: string, services: { name: string, price: number }[] };
+  reservationDetails: { date: string, timeSlot: string, services: Service[] };
   calculateTotal: () => number;
+  isLoadingServices: boolean;  // Nuevo prop para controlar la carga de servicios
 }
 
 const ReservationContent: React.FC<ReservationContentProps> = ({
@@ -29,11 +30,13 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
   selectedTimeSlot,
   setSelectedTimeSlot,
   selectedServices,
+  servicesList,
   toggleService,
   handleSubmit,
   showAlert,
   reservationDetails,
-  calculateTotal
+  calculateTotal,
+  isLoadingServices  // Nuevo prop para controlar la carga de servicios
 }) => {
   return (
     <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
@@ -82,19 +85,25 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
             <label className="label">
               <span className="label-text">Servicios</span>
             </label>
-            <div className="space-y-2">
-              {servicesList.map((service) => (
-                <label key={service.name} className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-primary"
-                    checked={selectedServices.some(s => s.name === service.name)}
-                    onChange={() => toggleService(service)}
-                  />
-                  <span className="label-text">{service.name} - ${service.price}</span>
-                </label>
-              ))}
-            </div>
+            {isLoadingServices ? (  // Mostrar loader si los servicios están cargando
+              <div className="flex justify-center items-center">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {servicesList.map((service) => (
+                  <label key={service.id} className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                      checked={selectedServices.some(s => s.id === service.id)}
+                      onChange={() => toggleService(service)}
+                    />
+                    <span className="label-text">{service.name} - ${service.price}</span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
           <div className="form-control">
             <label className="label">

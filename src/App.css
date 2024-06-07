@@ -1,4 +1,26 @@
-/* Estilos para los componentes sin imágenes de fondo */
+/* App.css */
+
+/* Asegúrate de que el cuerpo y el contenedor principal no permitan desplazamiento horizontal */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Asegúrate de que todos los elementos no se desborden */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ajuste específico para tu contenedor principal */
+.App {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+
 .background-loaded, .background-loaded-home {
   min-height: 100vh;
   display: flex;

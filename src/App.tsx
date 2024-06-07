@@ -5,6 +5,7 @@ import { TransitionGroup, Transition } from 'react-transition-group';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente ProtectedRoute
+import Loading from './components/Loading'; // Importa el componente Loading
 import './App.css';
 
 const Home = lazy(() => import('./components/Home'));
@@ -15,7 +16,7 @@ const Register = lazy(() => import('./components/Register'));
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="App flex flex-col min-h-screen">
+      <div className="App flex flex-col min-h-screen overflow-x-hidden"> {/* Añade overflow-x-hidden */}
         <Header />
         <main className="flex-grow">
           <AnimatedRoutes />
@@ -34,14 +35,14 @@ const AnimatedRoutes: React.FC = () => {
       <Transition
         key={location.key}
         timeout={300}
-        onEnter={(node:any) => node.classList.add('fade-enter')}
-        onEntering={(node:any) => node.classList.add('fade-enter-active')}
+        onEnter={(node: any) => node.classList.add('fade-enter')}
+        onEntering={(node: any) => node.classList.add('fade-enter-active')}
         onExit={(node) => node.classList.add('fade-exit')}
         onExiting={(node) => node.classList.add('fade-exit-active')}
       >
         {(state) => (
           <div className={`fade ${state}`}>
-            <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Routes location={location}>
                 <Route path="/" element={<Home />} />
                 <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} /> {/* Ruta protegida */}
