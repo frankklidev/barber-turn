@@ -19,7 +19,7 @@ interface ReservationContentProps {
   handleSubmit: (event: React.FormEvent) => void;
   calculateTotal: () => number;
   isLoadingServices: boolean;
-  isSubmitting: boolean; // Añadir la propiedad isSubmitting
+  isSubmitting: boolean;
 }
 
 const ReservationContent: React.FC<ReservationContentProps> = ({
@@ -34,7 +34,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
   handleSubmit,
   calculateTotal,
   isLoadingServices,
-  isSubmitting, // Añadir la propiedad isSubmitting
+  isSubmitting,
 }) => {
   return (
     <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">

@@ -4,19 +4,20 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { TransitionGroup, Transition } from 'react-transition-group';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente ProtectedRoute
-import Loading from './components/Loading'; // Importa el componente Loading
+import ProtectedRoute from './components/ProtectedRoute';
+import Loading from './components/Loading';
 import './App.css';
 
 const Home = lazy(() => import('./components/Home'));
 const Reservation = lazy(() => import('./components/Reservation'));
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="App flex flex-col min-h-screen overflow-x-hidden"> {/* Añade overflow-x-hidden */}
+      <div className="App flex flex-col min-h-screen overflow-x-hidden">
         <Header />
         <main className="flex-grow">
           <AnimatedRoutes />
@@ -48,6 +49,7 @@ const AnimatedRoutes: React.FC = () => {
                 <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </Suspense>
           </div>

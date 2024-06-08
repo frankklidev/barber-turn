@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { supabase } from '../supabaseClient';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,18 +12,16 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const passwordsMatch = password === confirmPassword;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
 
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+    if (!passwordsMatch) {
+      toast.error('Las contraseñas no coinciden');
       setLoading(false);
       return;
     }
@@ -33,6 +33,7 @@ const Register: React.FC = () => {
         data: {
           name,
           phone,
+          role: 'cliente', // Asigna el rol 'cliente' por defecto
         },
       },
     });
@@ -40,14 +41,14 @@ const Register: React.FC = () => {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      toast.error(error.message);
     } else {
-      setSuccess('Registro exitoso. Por favor, revisa tu correo electrónico para verificar tu cuenta.');
+      toast.success('Registro exitoso. Por favor, revisa tu correo electrónico para verificar tu cuenta.');
     }
   };
 
   return (
-<div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-14 -mb-11">
+    <div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-14 -mb-11">
       <div className="card w-full max-w-sm shadow-xl bg-base-100">
         <div className="card-body">
           <h2 className="card-title">Registrarse</h2>
@@ -72,8 +73,10 @@ const Register: React.FC = () => {
                 country={'us'}
                 value={phone}
                 onChange={phone => setPhone(phone)}
-                inputClass="input input-bordered"
-                containerClass="phone-input-container"
+                inputClass="input input-bordered w-full"
+                containerClass="phone-input-container w-full"
+                buttonClass="phone-input-button"
+                dropdownClass="phone-input-dropdown"
               />
             </div>
             <div className="form-control">
@@ -104,31 +107,28 @@ const Register: React.FC = () => {
               <label className="label">
                 <span className="label-text">Confirmar Contraseña</span>
               </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="input input-bordered"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="input input-bordered w-full"
+                  required
+                />
+                {confirmPassword && (
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-lg">
+                    {passwordsMatch ? (
+                      <FaCheckCircle className="text-green-500" />
+                    ) : (
+                      <FaTimesCircle className="text-red-500" />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             {loading && (
               <div className="flex justify-center">
                 <div className="radial-progress animate-spin" style={{ "--value": 70, "--size": "3rem", "--thickness": "3px" } as React.CSSProperties}></div>
-              </div>
-            )}
-            {error && (
-              <div className="alert alert-error">
-                <div className="flex-1">
-                  <label>{error}</label>
-                </div>
-              </div>
-            )}
-            {success && (
-              <div className="alert alert-success">
-                <div className="flex-1">
-                  <label>{success}</label>
-                </div>
               </div>
             )}
             <div className="form-control mt-6">
@@ -137,9 +137,7 @@ const Register: React.FC = () => {
               </button>
             </div>
           </form>
-          <div className="mt-4 text-center">
-            <p>¿Ya tienes una cuenta? <Link to="/login" className="text-primary">Inicia sesión aquí</Link></p>
-          </div>
+          <ToastContainer />
         </div>
       </div>
     </div>

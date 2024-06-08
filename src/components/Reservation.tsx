@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import '../App.css';
@@ -23,20 +22,55 @@ const Reservation: React.FC = () => {
 
   useEffect(() => {
     if (date) {
-      const availableTimeSlots = generateTimeSlots();
-      setTimeSlots(availableTimeSlots);
-      setSelectedTimeSlot('');
+      fetchAvailableTimeSlots(date);
     }
   }, [date]);
 
   const fetchServices = async () => {
     const { data, error } = await supabase.from('services').select('*');
     if (error) {
-      console.error(error);
+      toast.error('Error al cargar los servicios', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        theme: 'colored'
+      });
     } else {
       setServicesList(data);
       setIsLoadingServices(false);
     }
+  };
+
+  const fetchAvailableTimeSlots = async (selectedDate: string) => {
+    const { data: reservations, error } = await supabase
+      .from('reservations')
+      .select('time_slot')
+      .eq('date', selectedDate);
+
+    if (error) {
+      toast.error('Error al cargar los horarios disponibles', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        theme: 'colored'
+      });
+      return;
+    }
+
+    const reservedSlots = reservations.map(reservation => reservation.time_slot);
+    const availableTimeSlots = generateTimeSlots().filter(slot => !reservedSlots.includes(slot));
+    setTimeSlots(availableTimeSlots);
+    setSelectedTimeSlot('');
   };
 
   const generateTimeSlots = () => {
@@ -55,7 +89,17 @@ const Reservation: React.FC = () => {
     const user = session?.user;
 
     if (!user) {
-      console.error('Usuario no autenticado');
+      toast.error('Usuario no autenticado', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        theme: 'colored'
+      });
       setIsSubmitting(false);
       return;
     }
@@ -72,7 +116,6 @@ const Reservation: React.FC = () => {
       ]);
 
     if (error) {
-      console.error('Error al reservar turno:', error);
       toast.error('Error al reservar el turno', {
         position: 'bottom-center',
         autoClose: 5000,
