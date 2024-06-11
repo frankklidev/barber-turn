@@ -19,3 +19,4 @@ const useNotifications = (userId: string) => {
 };
 
 export default useNotifications;
+
