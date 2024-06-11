@@ -107,8 +107,13 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
               </div>
             </div>
           </div>
-          <div className="form-control mt-6">
-            <button type="submit" className="btn btn-primary w-full" disabled={isSubmitting || isLoadingServices}>Reservar</button>
+          <div className="form-control mt-6 relative">
+            <button type="submit" className="btn btn-primary w-full font-extrabold text-2xl" disabled={isSubmitting || isLoadingServices}>Reservar</button>
+            {isSubmitting && (
+              <div className="absolute inset-0 flex items-center justify-center bg-opacity-50 bg-gray-500 rounded-lg">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            )}
           </div>
         </form>
       </div>

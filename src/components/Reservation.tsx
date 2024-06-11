@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ReservationContent = lazy(() => import('./ReservationContent'));
 
+
 const Reservation: React.FC = () => {
   const [date, setDate] = useState('');
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
@@ -67,7 +68,7 @@ const Reservation: React.FC = () => {
       return;
     }
 
-    const reservedSlots = reservations.map(reservation => reservation.time_slot);
+    const reservedSlots = reservations.map((reservation: { time_slot: string }) => reservation.time_slot);
     const availableTimeSlots = generateTimeSlots().filter(slot => !reservedSlots.includes(slot));
     setTimeSlots(availableTimeSlots);
     setSelectedTimeSlot('');
@@ -104,7 +105,7 @@ const Reservation: React.FC = () => {
       return;
     }
 
-    const { error } = await supabase
+    const { error: insertError, data: reservationData } = await supabase
       .from('reservations')
       .insert([
         {
@@ -113,9 +114,10 @@ const Reservation: React.FC = () => {
           services: selectedServices.map(service => service.id),
           user_id: user.id,
         },
-      ]);
+      ])
+      .single();
 
-    if (error) {
+    if (insertError) {
       toast.error('Error al reservar el turno', {
         position: 'bottom-center',
         autoClose: 5000,
@@ -143,6 +145,28 @@ const Reservation: React.FC = () => {
       setDate('');
       setSelectedTimeSlot('');
       setSelectedServices([]);
+
+      if (reservationData) {
+        const { error: notifyError } = await supabase
+          .rpc('notify_admin', {
+            reservation_id: (reservationData as { id: string }).id,
+            user_id: user.id
+          });
+
+        if (notifyError) {
+          toast.error('Error al enviar la notificación', {
+            position: 'bottom-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            transition: Slide,
+            theme: 'colored'
+          });
+        }
+      }
     }
 
     setIsSubmitting(false);
@@ -161,7 +185,7 @@ const Reservation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center overflow-x-hidden -mt-24 -mb-11">
+    <div className="min-h-screen flex justify-center items-center overflow-x-hidden">
       <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>}>
         <ToastContainer />
         <ReservationContent

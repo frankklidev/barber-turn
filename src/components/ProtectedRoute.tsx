@@ -10,13 +10,21 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error getting session:', error);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
+      }
       setIsAuthenticated(!!session);
 
       if (session) {
+        console.log('Session found, fetching user role...');
         const { data: userData, error } = await supabase
           .from('users')
           .select('role')
@@ -26,9 +34,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }
         if (error) {
           console.error('Error fetching user role:', error);
         } else {
+          console.log('User role from DB:', userData.role);
           setUserRole(userData.role);
         }
       }
+      setIsLoading(false);
     };
 
     getSession();
@@ -45,8 +55,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }
             .single();
 
           if (error) {
-            console.error('Error fetching user role:', error);
+            console.error('Error fetching user role on state change:', error);
           } else {
+            console.log('Fetched user role on state change:', userData.role);
             setUserRole(userData.role);
           }
         };
@@ -62,7 +73,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }
     };
   }, []);
 
-  if (isAuthenticated === null) {
+  if (isLoading) {
     const progressBarStyle: React.CSSProperties = {
       '--value': 70,
       '--size': '3rem',
@@ -75,6 +86,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }
       </div>
     );
   }
+
+  console.log('User role:', userRole);
 
   if (isAuthenticated && (!requiredRole || userRole === requiredRole || userRole === 'admin')) {
     return element;

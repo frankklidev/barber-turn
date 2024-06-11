@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { TransitionGroup, Transition } from 'react-transition-group';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import Loading from './components/Loading';
+import { supabase } from './supabaseClient';
+import useNotifications from './hooks/useNotifications';
 import './App.css';
 
 const Home = lazy(() => import('./components/Home'));
@@ -15,6 +17,25 @@ const Register = lazy(() => import('./components/Register'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 
 const App: React.FC = () => {
+  const [userId, setUserId] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+      }
+    };
+
+    fetchUser();
+
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useNotifications(userId);
+
   return (
     <Router>
       <div className="App flex flex-col min-h-screen overflow-x-hidden">
@@ -49,7 +70,7 @@ const AnimatedRoutes: React.FC = () => {
                 <Route path="/reservar" element={<ProtectedRoute element={<Reservation />} />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/*" element={<ProtectedRoute element={<AdminDashboard />} requiredRole="admin" />} />
               </Routes>
             </Suspense>
           </div>
