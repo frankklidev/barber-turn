@@ -20,6 +20,7 @@ interface ReservationContentProps {
   calculateTotal: () => number;
   isLoadingServices: boolean;
   isSubmitting: boolean;
+  isLoadingTimeSlots: boolean; // Nuevo estado
 }
 
 const ReservationContent: React.FC<ReservationContentProps> = ({
@@ -35,6 +36,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
   calculateTotal,
   isLoadingServices,
   isSubmitting,
+  isLoadingTimeSlots, // Nuevo estado
 }) => {
   return (
     <div className="card w-full max-w-lg shadow-xl bg-base-100 bg-opacity-80 p-4 rounded-lg">
@@ -58,17 +60,23 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
               <label className="label">
                 <span className="label-text">Horarios disponibles</span>
               </label>
-              <select
-                value={selectedTimeSlot}
-                onChange={(e) => setSelectedTimeSlot(e.target.value)}
-                className="select select-bordered text-lg"
-                required
-              >
-                <option value="" disabled>Seleccione un horario</option>
-                {timeSlots.map((slot) => (
-                  <option key={slot} value={slot}>{slot}</option>
-                ))}
-              </select>
+              {isLoadingTimeSlots ? (
+                <div className="flex justify-center items-center">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              ) : (
+                <select
+                  value={selectedTimeSlot}
+                  onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                  className="select select-bordered text-lg"
+                  required
+                >
+                  <option value="" disabled>Seleccione un horario</option>
+                  {timeSlots.map((slot) => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+              )}
             </div>
           )}
           <div className="form-control">

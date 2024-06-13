@@ -16,6 +16,7 @@ const Reservation: React.FC = () => {
   const [servicesList, setServicesList] = useState<Service[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false); // Nuevo estado
 
   useEffect(() => {
     fetchServices();
@@ -48,6 +49,7 @@ const Reservation: React.FC = () => {
   };
 
   const fetchAvailableTimeSlots = async (selectedDate: string) => {
+    setIsLoadingTimeSlots(true); // Empezar la carga
     const { data: reservations, error } = await supabase
       .from('reservations')
       .select('time_slot')
@@ -65,6 +67,7 @@ const Reservation: React.FC = () => {
         transition: Slide,
         theme: 'colored'
       });
+      setIsLoadingTimeSlots(false); // Terminar la carga
       return;
     }
 
@@ -72,6 +75,7 @@ const Reservation: React.FC = () => {
     const availableTimeSlots = generateTimeSlots().filter(slot => !reservedSlots.includes(slot));
     setTimeSlots(availableTimeSlots);
     setSelectedTimeSlot('');
+    setIsLoadingTimeSlots(false); // Terminar la carga
   };
 
   const generateTimeSlots = () => {
@@ -184,6 +188,7 @@ const Reservation: React.FC = () => {
     return selectedServices.reduce((total, service) => total + service.price, 0);
   };
 
+ 
   return (
     <div className="min-h-screen flex justify-center items-center overflow-x-hidden">
       <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>}>
@@ -201,6 +206,7 @@ const Reservation: React.FC = () => {
           handleSubmit={handleSubmit}
           calculateTotal={calculateTotal}
           isSubmitting={isSubmitting}
+          isLoadingTimeSlots={isLoadingTimeSlots} // Añadir el nuevo estado
         />
       </Suspense>
     </div>
